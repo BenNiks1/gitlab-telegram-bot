@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    restart: always
+    command: python app.py
+    volumes:
+      - .:/code
+    environment:
+      - COMPOSE_HTTP_TIMEOUT=90
+      - TZ=Europe/Moscow
+    ports:
+      - 10111:10111

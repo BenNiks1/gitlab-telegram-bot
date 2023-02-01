@@ -3,12 +3,13 @@
 import time
 import requests
 from threading import Thread
-
+import os
+from config import TOKEN
 
 class Bot:
     def __init__(self):
         try:
-            self.token = open('token').read().split()[0]
+            self.token = TOKEN
         except:
             raise Exception("The token file is invalid")
 
@@ -23,7 +24,8 @@ class Bot:
     def botq(self, method, params=None):
         url = self.api + method
         params = params if params else {}
-        return requests.post(url, params).json()
+        resp=requests.post(url, params)
+        return resp.json()
 
     def msg_recv(self, msg):
         ''' method to override '''
