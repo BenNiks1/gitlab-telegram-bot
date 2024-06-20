@@ -7,16 +7,12 @@ import os
 from config import TOKEN
 
 class Bot:
-    def __init__(self):
-        try:
-            self.token = TOKEN
-        except:
-            raise Exception("The token file is invalid")
-
-        self.api = 'https://api.telegram.org/bot%s/' % self.token
+    def __init__(self, token):
+        self.token = token
+        self.api = f'https://api.telegram.org/bot{self.token}/'
         try:
             self.offset = int(open('offset').read().split()[0])
-        except:
+        except FileNotFoundError:
             self.offset = 0
         self.me = self.botq('getMe')
         self.running = False
@@ -24,7 +20,7 @@ class Bot:
     def botq(self, method, params=None):
         url = self.api + method
         params = params if params else {}
-        resp=requests.post(url, params)
+        resp = requests.post(url, params)
         return resp.json()
 
     def msg_recv(self, msg):
@@ -64,10 +60,15 @@ class Bot:
             to = ''
         return to
 
-    def reply(self, to, msg):
+    def reply(self, to, msg, parse_mode='Markdown'):
         if type(to) not in [int, str]:
             to = self.get_to_from_msg(to)
-        resp = self.botq('sendMessage', {'chat_id': to, 'text': msg, 'disable_web_page_preview': True, 'parse_mode': 'Markdown'})
+        resp = self.botq('sendMessage', {
+            'chat_id': to,
+            'text': msg,
+            'disable_web_page_preview': True,
+            'parse_mode': parse_mode
+        })
         return resp
 
     def run(self):
@@ -85,5 +86,5 @@ class Bot:
 
 
 if __name__ == '__main__':
-    bot = Bot()
+    bot = Bot(TOKEN)
     bot.run()
